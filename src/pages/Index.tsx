@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from "@/lib/supabaseClient";
 import { Header } from "@/components/Header";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { ProductCard } from "@/components/ProductCard";
@@ -13,7 +13,7 @@ const Index = () => {
   const { data: products } = useQuery({
     queryKey: ["products", selectedCategory, searchQuery],
     queryFn: async () => {
-      let query = supabase.from("products").select("*");
+      let query = sb.from("products").select("*");
 
       if (selectedCategory) {
         query = query.eq("category_id", selectedCategory);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from "@/lib/supabaseClient";
 import { User } from "@supabase/supabase-js";
 
 interface ProtectedRouteProps {
@@ -15,12 +15,12 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   useEffect(() => {
     // Check initial session
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await sb.auth.getSession();
       setUser(session?.user ?? null);
 
       // Check if user is admin
       if (session?.user) {
-        const { data: roleData } = await supabase
+        const { data: roleData } = await sb
           .from("user_roles")
           .select("role")
           .eq("user_id", session.user.id)
@@ -36,14 +36,14 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     checkAuth();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = sb.auth.onAuthStateChange(
       async (event, session) => {
         setUser(session?.user ?? null);
         
         // Check admin role on auth change
         if (session?.user) {
           setTimeout(async () => {
-            const { data: roleData } = await supabase
+            const { data: roleData } = await sb
               .from("user_roles")
               .select("role")
               .eq("user_id", session.user.id)

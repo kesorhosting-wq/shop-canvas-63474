@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,7 +34,7 @@ export default function Admin() {
   const [categoryName, setCategoryName] = useState("");
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await sb.auth.signOut();
     toast.success("Logged out successfully");
     navigate("/auth");
   };
@@ -42,7 +42,7 @@ export default function Admin() {
   const { data: settings } = useQuery({
     queryKey: ["site-settings"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("site_settings")
         .select("*")
         .single();
@@ -60,7 +60,7 @@ export default function Admin() {
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("categories")
         .select("*")
         .order("name");
@@ -72,7 +72,7 @@ export default function Admin() {
   const { data: products } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("products")
         .select("*, categories(name)")
         .order("created_at", { ascending: false });
@@ -83,7 +83,7 @@ export default function Admin() {
 
   const updateSettings = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
+      const { error } = await sb
         .from("site_settings")
         .update({
           store_name: storeName,
@@ -104,7 +104,7 @@ export default function Admin() {
 
   const addProduct = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("products").insert({
+      const { error } = await sb.from("products").insert({
         name: productName,
         product_id: productId,
         price: parseFloat(price),
@@ -134,7 +134,7 @@ export default function Admin() {
 
   const deleteProduct = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("products").delete().eq("id", id);
+      const { error } = await sb.from("products").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -145,7 +145,7 @@ export default function Admin() {
 
   const addCategory = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("categories").insert({
+      const { error } = await sb.from("categories").insert({
         name: categoryName,
       });
       if (error) throw error;
@@ -159,7 +159,7 @@ export default function Admin() {
 
   const deleteCategory = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("categories").delete().eq("id", id);
+      const { error } = await sb.from("categories").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

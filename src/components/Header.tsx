@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import { Input } from "./ui/input";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from "@/lib/supabaseClient";
 import { Link } from "react-router-dom";
 
 interface HeaderProps {
@@ -13,7 +13,7 @@ export const Header = ({ onSearch, searchQuery }: HeaderProps) => {
   const { data: settings } = useQuery({
     queryKey: ["site-settings"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("site_settings")
         .select("*")
         .single();
