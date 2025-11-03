@@ -42,7 +42,7 @@ export const CategoryFilter = ({
             onClick={() => onSelectCategory(category.id)}
             className="min-w-fit rounded-full px-8 font-medium"
           >
-            {category.name}
+            📱 {category.name}
           </Button>
         ))}
       </div>
